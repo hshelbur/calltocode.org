@@ -11,18 +11,24 @@ import { login } from '../../actions'
 class Login extends Component {
   renderEmail (field) {
     return (
-      <input className={styles.inputEmail}
-        placeholder="Email"
-        {...field.input} />
+      <div>
+        <input className={styles.inputEmail}
+          placeholder="Email"
+          {...field.input} />
+        <div > <span className={styles.errorContent}>{field.meta.touched ? field.meta.error : ''}</span></div>
+      </div>
     )
   }
 
   renderPassword (field) {
     return (
-      <input className={styles.inputPassword}
-        placeholder="Password"
-        type="password"
-        {...field.input} />
+      <div>
+        <input className={styles.inputPassword}
+          placeholder="Password"
+          type="password"
+          {...field.input} />
+        <div className={styles.errorContent}> {field.meta.touched ? field.meta.error : ''}</div>
+      </div>
     )
   }
 
@@ -51,7 +57,22 @@ Login.propTypes = {
   handleSubmit: PropTypes.func
 }
 
-function validateEmailAndPassword (values) {
+function validate (values) {
+  const errors = {}
+  if (!values.email || values.email === '') {
+    errors.email = `Please enter an email`
+  } else if (values.email !== credentials.email) {
+    errors.email = `Email is incorrect`
+  }
+  if (!values.password || values.password === '') {
+    errors.password = `Please enter a password`
+  } else if (values.password !== credentials.password) {
+    errors.password = `Password is incorrect`
+  }
+  return errors
+}
+
+/* function validateEmailAndPassword (values) {
   const errors = {}
   if (values.email !== credentials.email) {
     errors.email = `Email should be ${credentials.email}`
@@ -60,12 +81,12 @@ function validateEmailAndPassword (values) {
     errors.password = `Password should be ${credentials.password}`
   }
   return errors
-}
+} */
 
 const LoginForm = reduxForm({
   form: 'LoginForm',
   onSubmitSuccess: (result, dispatch) => dispatch(push('/')),
-  validate: validateEmailAndPassword
+  validate
 })(Login)
 
 export default connect(null, { login })(LoginForm)
